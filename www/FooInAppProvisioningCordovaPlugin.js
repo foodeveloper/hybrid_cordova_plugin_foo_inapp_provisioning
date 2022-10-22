@@ -1,0 +1,37 @@
+var exec = require('cordova/exec');
+
+fooInAppProvisioning.setHostNameAndPath = function(hostName, path, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "setHostNameAndPath", [hostName, path]);
+};
+
+fooInAppProvisioning.deviceSupportsAppleWallet = function(success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "deviceSupportsAppleWallet", []);
+};
+
+fooInAppProvisioning.getLocalPasses = function(success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "getLocalPasses", []);
+};
+
+fooInAppProvisioning.getRemotePasses = function(success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "getRemotePasses",[]);
+};
+
+fooInAppProvisioning.isCardAddedToLocalWalletWithCardSuffix = function(cardSuffix, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "isCardAddedToLocalWalletWithCardSuffix", [cardSuffix]);
+};
+
+fooInAppProvisioning.isCardAddedToRemoteWalletWithCardSuffix = function(cardSuffix, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "isCardAddedToRemoteWalletWithCardSuffix", [cardSuffix]);
+};
+
+fooInAppProvisioning.isCardAddedToLocalWalletWithPrimaryAccountIdentifier = function(primaryAccountIdentifier, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "isCardAddedToLocalWalletWithPrimaryAccountIdentifier", [primaryAccountIdentifier]);
+};
+
+fooInAppProvisioning.isCardAddedToRemoteWalletWithPrimaryAccountIdentifier = function(primaryAccountIdentifier, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "isCardAddedToRemoteWalletWithPrimaryAccountIdentifier", [primaryAccountIdentifier]);
+};
+
+fooInAppProvisioning.addCard = function(userId, cardId, cardHolderName, localizedDescription, cardPanSuffix, pan, expiryDate, success, error) {         
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "addCardForUser", [userId, cardId, cardHolderName, localizedDescription, cardPanSuffix, pan, expiryDate]);
+};
