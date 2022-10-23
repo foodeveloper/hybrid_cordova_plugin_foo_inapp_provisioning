@@ -1,13 +1,13 @@
 {
-  "name": "cordova-plugin-foo-in-app-provisioning",
+  "name": "cordova-plugin-foo-inapp-provisioning",
   "version": "0.1.0",
   "description": "Wrapper for FOO's Apple InAppProvisioning Native SDK",
   "cordova": {
-    "id": "cordova-plugin-foo-in-app-provisioning",
+    "id": "cordova-plugin-foo-inapp-provisioning",
     "platforms": [
       "ios"
     ]
-  },
+  }, 
   "repository": {
     "type": "git",
     "url": "https://git.foo.mobi/hybrid/cordova-plugin-foo-in-app-provisioning"

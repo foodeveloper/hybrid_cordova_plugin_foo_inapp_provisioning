@@ -1,19 +1,23 @@
 /********* FooInAppProvisioningCordovaPlugin.m Cordova Plugin Implementation *******/
 
 #import <Cordova/CDV.h>
+#import <FooAppleWallet/FOAppleWallet.h>
+#import <FooAppleWallet/FOInAppProvisioning.h>
 
-@interface FooInAppProvisioningCordovaPlugin : CDVPlugin {
-  // Member variables go here.
+@interface FooInAppProvisioningCordovaPlugin : CDVPlugin <FOInAppProtocol> {
+  // Member variables go here.  
 }
 
+@property (nonatomic, strong) CDVInvokedUrlCommand *delegateCommand;
+
 - (void)setHostNameAndPath:(CDVInvokedUrlCommand*)command;
-- (NSNumber *)deviceSupportsAppleWallet;
-- (nullable NSArray <PKPass *>*)getLocalPasses;
-- (nullable NSArray <PKPaymentPass *>*)getRemotePasses;
-- (NSNumber *)isCardAddedToLocalWalletWithCardSuffix:(CDVInvokedUrlCommand*)command;
-- (NSNumber *)isCardAddedToRemoteWalletWithCardSuffix:(CDVInvokedUrlCommand*)command;
-- (NSNumber *)isCardAddedToLocalWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command;
-- (NSNumber *)isCardAddedToRemoteWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command;
+- (void)deviceSupportsAppleWallet:(CDVInvokedUrlCommand*)command;
+- (void)getLocalPasses:(CDVInvokedUrlCommand*)command;
+- (void)getRemotePasses:(CDVInvokedUrlCommand*)command;
+- (void)isCardAddedToLocalWalletWithCardSuffix:(CDVInvokedUrlCommand*)command;
+- (void)isCardAddedToRemoteWalletWithCardSuffix:(CDVInvokedUrlCommand*)command;
+- (void)isCardAddedToLocalWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command;
+- (void)isCardAddedToRemoteWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command;
 - (void)addCardForUser:(CDVInvokedUrlCommand*)command;
 
 @end
@@ -28,22 +32,23 @@
     [FOAppleWallet setHostName:hostName andPath:path];
 
     __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{};
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (NSNumber *)deviceSupportsAppleWallet
+- (void)deviceSupportsAppleWallet:(CDVInvokedUrlCommand*)command
 {
-    BOOL result = [FOInAppProvisioning deviceSupportsAppleWallet];
+    BOOL deviceSupportsAppleWallet = [FOInAppProvisioning deviceSupportsAppleWallet];
+    NSNumber* result = [NSNumber numberWithBool:deviceSupportsAppleWallet];
 
     __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":result};    
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-    return [NSNumber numberWithBool:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];    
 }
 
-- (nullable NSArray <PKPass *>*)getLocalPasses
+- (void)getLocalPasses:(CDVInvokedUrlCommand*)command
 {
     NSMutableArray* jsonList = [NSMutableArray arrayWithCapacity:[FOInAppProvisioning getLocalPasses].count];
     for (PKPass* pkPass in [FOInAppProvisioning getLocalPasses]) {
@@ -51,13 +56,12 @@
     }
 
     __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":jsonList};
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-    return jsonList;
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];    
 }
 
-- (nullable NSArray <PKPaymentPass *>*)getRemotePasses
+- (void)getRemotePasses:(CDVInvokedUrlCommand*)command
 {
     NSMutableArray* jsonList = [NSMutableArray arrayWithCapacity:[FOInAppProvisioning getRemotePasses].count];
     for (PKPaymentPass* pkPaymentPass in [FOInAppProvisioning getRemotePasses]) {
@@ -65,58 +69,57 @@
     }
 
     __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":jsonList};
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-    return jsonList;
 }
 
-- (NSNumber *)isCardAddedToLocalWalletWithCardSuffix:(CDVInvokedUrlCommand*)command
+- (void)isCardAddedToLocalWalletWithCardSuffix:(CDVInvokedUrlCommand*)command
 {
     NSString* cardSuffix = [command.arguments objectAtIndex:0];
-    BOOL result = [FOInAppProvisioning isCardAddedToLocalWalletWithCardSuffix:cardSuffix];
+    BOOL cardAdded = [FOInAppProvisioning isCardAddedToLocalWalletWithCardSuffix:cardSuffix];
+    NSNumber* result = [NSNumber numberWithBool:cardAdded];
 
     __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":result};
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-    return [NSNumber numberWithBool:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];    
 }
 
-- (NSNumber *)isCardAddedToRemoteWalletWithCardSuffix:(CDVInvokedUrlCommand*)command
+- (void)isCardAddedToRemoteWalletWithCardSuffix:(CDVInvokedUrlCommand*)command
 {
     NSString* cardSuffix = [command.arguments objectAtIndex:0];
-    BOOL result = [FOInAppProvisioning isCardAddedToRemoteWalletWithCardSuffix:cardSuffix];
+    BOOL cardAdded = [FOInAppProvisioning isCardAddedToRemoteWalletWithCardSuffix:cardSuffix];
+    NSNumber* result = [NSNumber numberWithBool:cardAdded];
 
     __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":result};
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-    return [NSNumber numberWithBool:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];    
 }
 
-- (NSNumber *)isCardAddedToLocalWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command
+- (void)isCardAddedToLocalWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command
 {
     NSString* primaryAccountIdentifier = [command.arguments objectAtIndex:0];
-    BOOL result = [FOInAppProvisioning isCardAddedToLocalWalletWithPrimaryAccountIdentifier:primaryAccountIdentifier];
+    BOOL cardAdded = [FOInAppProvisioning isCardAddedToLocalWalletWithPrimaryAccountIdentifier:primaryAccountIdentifier];
+    NSNumber* result = [NSNumber numberWithBool:cardAdded];
 
     __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":result};
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-    return [NSNumber numberWithBool:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];    
 }
 
-- (NSNumber *)isCardAddedToRemoteWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command
+- (void)isCardAddedToRemoteWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command
 {
     NSString* primaryAccountIdentifier = [command.arguments objectAtIndex:0];
-    BOOL result = [FOInAppProvisioning isCardAddedToRemoteWalletWithPrimaryAccountIdentifier:primaryAccountIdentifier];
+    BOOL cardAdded = [FOInAppProvisioning isCardAddedToRemoteWalletWithPrimaryAccountIdentifier:primaryAccountIdentifier];
+    NSNumber* result = [NSNumber numberWithBool:cardAdded];
 
     __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":result};
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-    return [NSNumber numberWithBool:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];    
 }
 
 - (void)addCardForUser:(CDVInvokedUrlCommand*)command
@@ -128,7 +131,13 @@
     NSString* localizedDescription = [command.arguments objectAtIndex:4];
     NSString* pan = [command.arguments objectAtIndex:5];
     NSString* expiryDate = [command.arguments objectAtIndex:6];    
-    return [FOInAppProvisioning addCardForUserId:userId cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix localizedDescription:localizedDescription inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];
+    self.delegateCommand = command;
+    if (pan != nil && expiryDate != nil) {
+        return [FOInAppProvisioning addCardForUserId:userId cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix localizedDescription:localizedDescription inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];
+    }
+    else {
+        return [FOInAppProvisioning addCardForUserId:userId cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix localizedDescription:localizedDescription pan:pan expiryDate:expiryDate inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];
+    }
 }
 
 //Delegate
@@ -154,12 +163,14 @@
                                                              options:NSJSONWritingPrettyPrinted
                                                                error:&error];
             if (!jsonData) {
+                NSDictionary *failure = @{@"error" : error.localizedDescription};
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:failure];
             } else {
                 NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];            
+                NSDictionary *success = @{@"result":jsonString};
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];            
             }
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCommand.callbackId];
     }];
 }
 
