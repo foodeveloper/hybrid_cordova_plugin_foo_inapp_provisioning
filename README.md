@@ -13,25 +13,25 @@ function successCallback(result){
   //Add Success Handling here
 }
 
-function FailureCallback(message){
+function failureCallback(message){
   //Add Failure Handling here
 }
-  
-FooInAppProvisioningCordovaPlugin.setHostNameAndPath("YOUR_HOST", "YOUR_PATH", successCallback, FailureCallback);
+
+FooInAppProvisioningCordovaPlugin.setHostNameAndPath("YOUR_HOST", "YOUR_PATH", successCallback, failureCallback);
 ```
 
 ### Check device supports Apple Wallet
 
-``` 
+```
 function successCallback(result){
   //Add Success Handling here
 }
-  
-function FailureCallback(message){
+
+function failureCallback(message){
   //Add Failure Handling here
 }
 
-FooInAppProvisioningCordovaPlugin.deviceSupportsAppleWallet(successCallback, FailureCallback);
+FooInAppProvisioningCordovaPlugin.deviceSupportsAppleWallet(successCallback, failureCallback);
 ```
 
 ### Get Local Passes
@@ -41,11 +41,11 @@ function successCallback(result){
   //Add Success Handling here
 }
 
-function FailureCallback(message){
+function failureCallback(message){
   //Add Failure Handling here
 }
 
-FooInAppProvisioningCordovaPlugin.getLocalPasses(successCallback, FailureCallback);
+FooInAppProvisioningCordovaPlugin.getLocalPasses(successCallback, failureCallback);
 ```
 
 ### Get Remote Passes
@@ -55,11 +55,11 @@ function successCallback(result){
   //Add Success Handling here
 }
 
-function FailureCallback(message){
+function failureCallback(message){
   //Add Failure Handling here
 }
 
-FooInAppProvisioningCordovaPlugin.getRemotePasses(successCallback, FailureCallback);
+FooInAppProvisioningCordovaPlugin.getRemotePasses(successCallback, failureCallback);
 ```
 
 ### Check Card Added To Local Wallet With Card Suffix
@@ -69,11 +69,11 @@ function successCallback(result){
   //Add Success Handling here
 }
 
-function FailureCallback(message){
+function failureCallback(message){
   //Add Failure Handling here
 }
   
-FooInAppProvisioningCordovaPlugin.isCardAddedToLocalWalletWithCardSuffix("CARD_SUFFIX", successCallback, FailureCallback);
+FooInAppProvisioningCordovaPlugin.isCardAddedToLocalWalletWithCardSuffix("CARD_SUFFIX", successCallback, failureCallback);
 ```
 
 
@@ -84,11 +84,11 @@ function successCallback(result){
   //Add Success Handling here
 }
 
-function FailureCallback(message){
+function failureCallback(message){
   //Add Failure Handling here
 }
   
-FooInAppProvisioningCordovaPlugin.isCardAddedToRemoteWalletWithCardSuffix("CARD_SUFFIX", successCallback, FailureCallback);
+FooInAppProvisioningCordovaPlugin.isCardAddedToRemoteWalletWithCardSuffix("CARD_SUFFIX", successCallback, failureCallback);
 ```
 
 ### Check Card Added To Local Wallet With Primary Account Identifier
@@ -98,11 +98,11 @@ function successCallback(result){
   //Add Success Handling here
 }
   
-function FailureCallback(message){
+function failureCallback(message){
   //Add Failure Handling here
 }
   
-FooInAppProvisioningCordovaPlugin.isCardAddedToLocalWalletWithPrimaryAccountIdentifier("ACCOUNT_IDENTIFIER", successCallback, FailureCallback);
+FooInAppProvisioningCordovaPlugin.isCardAddedToLocalWalletWithPrimaryAccountIdentifier("ACCOUNT_IDENTIFIER", successCallback, failureCallback);
 ```
 
 
@@ -113,11 +113,11 @@ function successCallback(result){
   //Add Success Handling here
 }
 
-function FailureCallback(message){
+function failureCallback(message){
   //Add Failure Handling here
 }
 
-FooInAppProvisioningCordovaPlugin.isCardAddedToRemoteWalletWithPrimaryAccountIdentifier("ACCOUNT_IDENTIFIER", successCallback, FailureCallback);
+FooInAppProvisioningCordovaPlugin.isCardAddedToRemoteWalletWithPrimaryAccountIdentifier("ACCOUNT_IDENTIFIER", successCallback, failureCallback);
 ```
 
 ### Add Card
@@ -127,11 +127,11 @@ function successCallback(result){
   //Add Success Handling here
 }
   
-function FailureCallback(message){
+function failureCallback(message){
   //Add Failure Handling here
 }
   
-FooInAppProvisioningCordovaPlugin.addCard("USER_ID", "CARD_ID", "CARD_HOLDER_NAME", "LOCALIZED_DESCRIPTION", "CARD_PAN_SUFFIX", "PAN", "EXPIRY_DATE", successCallback, FailureCallback);
+FooInAppProvisioningCordovaPlugin.addCard("USER_ID", "CARD_ID", "CARD_HOLDER_NAME", "LOCALIZED_DESCRIPTION", "CARD_PAN_SUFFIX", "PAN", "EXPIRY_DATE", successCallback, failureCallback);
 ```
 
 Examples:
