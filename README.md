@@ -7,7 +7,9 @@
 
 ## Implementation
 
-### Add Host and Path:
+## Apple Wallet
+
+#### Add Host and Path:
 ```
 function successCallback(result){
   //Add Success Handling here
@@ -20,7 +22,7 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.setHostNameAndPath("YOUR_HOST", "YOUR_PATH", successCallback, failureCallback);
 ```
 
-### Check device supports Apple Wallet
+#### Check device supports Apple Wallet
 
 ```
 function successCallback(result){
@@ -34,7 +36,7 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.deviceSupportsAppleWallet(successCallback, failureCallback);
 ```
 
-### Get Local Passes
+#### Get Local Passes
 
 ``` 
 function successCallback(result){
@@ -48,7 +50,7 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.getLocalPasses(successCallback, failureCallback);
 ```
 
-### Get Remote Passes
+#### Get Remote Passes
 
 ``` 
 function successCallback(result){
@@ -62,7 +64,7 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.getRemotePasses(successCallback, failureCallback);
 ```
 
-### Check Card Added To Local Wallet With Card Suffix
+#### Check Card Added To Local Wallet With Card Suffix
 
 ``` 
 function successCallback(result){
@@ -77,7 +79,7 @@ FooInAppProvisioningCordovaPlugin.isCardAddedToLocalWalletWithCardSuffix("CARD_S
 ```
 
 
-### Check Card Added To Remote Wallet With Card Suffix
+#### Check Card Added To Remote Wallet With Card Suffix
 
 ```
 function successCallback(result){
@@ -91,7 +93,7 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.isCardAddedToRemoteWalletWithCardSuffix("CARD_SUFFIX", successCallback, failureCallback);
 ```
 
-### Check Card Added To Local Wallet With Primary Account Identifier
+#### Check Card Added To Local Wallet With Primary Account Identifier
 
 ```
 function successCallback(result){
@@ -105,8 +107,7 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.isCardAddedToLocalWalletWithPrimaryAccountIdentifier("ACCOUNT_IDENTIFIER", successCallback, failureCallback);
 ```
 
-
-### Check Card Added To Remote Wallet With Primary Account Identifier
+#### Check Card Added To Remote Wallet With Primary Account Identifier
 
 ```
 function successCallback(result){
@@ -120,7 +121,7 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.isCardAddedToRemoteWalletWithPrimaryAccountIdentifier("ACCOUNT_IDENTIFIER", successCallback, failureCallback);
 ```
 
-### Add Card
+#### Add Card
 
 ``` 
 function successCallback(result){
@@ -141,5 +142,25 @@ FooInAppProvisioningCordovaPlugin.addCard("1234", "123", "TEST USER", "en", "417
 FooInAppProvisioningCordovaPlugin.addCard("1234", "123", "TEST USER", "en", "4178", null, null, testSuccess, testFail)
 ```
 
+### Watch supports
 
+#### Check Watch Pairing
 
+```
+function successCallback(result){
+  //Add Success Handling here
+}
+
+function failureCallback(message){
+  //Add Failure Handling here
+}
+
+FooInAppProvisioningCordovaPlugin.isWatchPaired(successCallback, failureCallback);
+```
+
+Possible results for successCallback:
+- "isPaired" : true/false
+- "status" : "active"/"inactive"/"deactived"
+
+Possible results for failureCallback:
+- "status" : "notSupported"
