@@ -89,4 +89,8 @@ fooInAppProvisioning.addCard = function(userId, cardId, cardHolderName, localize
     exec(success, error, "FooInAppProvisioningCordovaPlugin", "addCardForUser", [userId, cardId, cardHolderName, localizedDescription, cardPanSuffix, pan, expiryDate]);
 };
 
+fooInAppProvisioning.isWatchPaired = function(success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "isWatchPaired", []);
+};
+
 module.exports = fooInAppProvisioning;

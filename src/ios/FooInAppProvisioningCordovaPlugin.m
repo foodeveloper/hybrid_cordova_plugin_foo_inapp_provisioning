@@ -3,12 +3,14 @@
 #import <Cordova/CDV.h>
 #import <FooAppleWallet/FOAppleWallet.h>
 #import <FooAppleWallet/FOInAppProvisioning.h>
+#import <WatchConnectivity/WatchConnectivity.h>
 
-@interface FooInAppProvisioningCordovaPlugin : CDVPlugin <FOInAppProtocol> {
+@interface FooInAppProvisioningCordovaPlugin : CDVPlugin <FOInAppProtocol, WCSessionDelegate> {
   // Member variables go here.  
 }
 
-@property (nonatomic, strong) CDVInvokedUrlCommand *delegateCommand;
+@property (nonatomic, strong) CDVInvokedUrlCommand *inAppDelegateCommand;
+@property (nonatomic, strong) CDVInvokedUrlCommand *watchDelegateCommand;
 
 - (void)setHostNameAndPath:(CDVInvokedUrlCommand*)command;
 - (void)deviceSupportsAppleWallet:(CDVInvokedUrlCommand*)command;
@@ -19,6 +21,8 @@
 - (void)isCardAddedToLocalWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command;
 - (void)isCardAddedToRemoteWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command;
 - (void)addCardForUser:(CDVInvokedUrlCommand*)command;
+
+- (void)isWatchPaired:(CDVInvokedUrlCommand*)command;
 
 @end
 
@@ -131,7 +135,7 @@
     NSString* localizedDescription = [command.arguments objectAtIndex:4];
     NSString* pan = [command.arguments objectAtIndex:5];
     NSString* expiryDate = [command.arguments objectAtIndex:6];    
-    self.delegateCommand = command;
+    self.inAppDelegateCommand = command;
     
     if (pan != nil && expiryDate != nil && ![pan isEqual:[NSNull null]] && ![expiryDate isEqual:[NSNull null]]) {
 
@@ -143,7 +147,27 @@
     }
 }
 
-//Delegate
+- (void)isWatchPaired:(CDVInvokedUrlCommand*)command {
+    
+    self.watchDelegateCommand = command;   
+    if (![WCSession isSupported]){        
+        NSDictionary *result = @{@"status" : @"notSupported"};
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:result];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.watchDelegateCommand.callbackId];
+        return;
+    }
+    
+    [self activateSession];    
+    
+    BOOL isPaired = [[WCSession defaultSession] isPaired];
+    NSDictionary *result = @{@"isPaired" : @(isPaired)};
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.watchDelegateCommand.callbackId];
+}
+
+//Delegates
+
+////FOInAppProtocol
 - (void)didFinishAddingCard:(nullable PKPaymentPass *)pass error:(FOInAppAddCardError)error errorMessage:(nullable NSString *)errorMessage {    
 
     __block CDVPluginResult* pluginResult = nil;
@@ -173,8 +197,27 @@
                 NSDictionary *success = @{@"result":jsonString};
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];            
             }
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.delegateCommand.callbackId];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.inAppDelegateCommand.callbackId];
     }];
+}
+
+////WCSessionDelegate
+- (void)session:(nonnull WCSession *)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(nullable NSError *)error {            
+    NSDictionary *result = @{@"status" : @"active"};
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.watchDelegateCommand.callbackId];
+}
+
+- (void)sessionDidBecomeInactive:(nonnull WCSession *)session {
+    NSDictionary *result = @{@"status" : @"inactive"};
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.watchDelegateCommand.callbackId];
+}
+
+- (void)sessionDidDeactivate:(nonnull WCSession *)session {
+    NSDictionary *result = @{@"status" : @"deactived"};
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.watchDelegateCommand.callbackId];
 }
 
 //Helpers
@@ -230,6 +273,11 @@
     }
     
     return [dictionary copy];
+}
+
+- (void)activateSession {        
+    [[WCSession defaultSession] setDelegate:self];
+    [[WCSession defaultSession] activateSession];
 }
 
 @end
