@@ -18,7 +18,7 @@
 
         <podspec>
             <config>
-                <source url="git@github.com:foodeveloper/foopods.git"/>
+                <source url="https://github.com/foodeveloper/foopods"/>
             </config>
             <pods>
                 <pod name="FooAppleWalletFramework" spec="~> 1.0.13" />
