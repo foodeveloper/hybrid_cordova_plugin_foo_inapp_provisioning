@@ -130,9 +130,9 @@
 {
     NSString* userId = [command.arguments objectAtIndex:0];
     NSString* cardId = [command.arguments objectAtIndex:1];
-    NSString* cardHolderName = [command.arguments objectAtIndex:2];
-    NSString* cardPanSuffix = [command.arguments objectAtIndex:3];
-    NSString* localizedDescription = [command.arguments objectAtIndex:4];
+    NSString* cardHolderName = [command.arguments objectAtIndex:2];    
+    NSString* localizedDescription = [command.arguments objectAtIndex:3];
+    NSString* cardPanSuffix = [command.arguments objectAtIndex:4];
     NSString* pan = [command.arguments objectAtIndex:5];
     NSString* expiryDate = [command.arguments objectAtIndex:6];    
     self.inAppDelegateCommand = command;
