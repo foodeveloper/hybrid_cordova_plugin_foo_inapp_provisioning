@@ -137,7 +137,7 @@
     NSString* expiryDate = [command.arguments objectAtIndex:6];    
     self.inAppDelegateCommand = command;
     
-    if (pan != nil && expiryDate != nil && ![pan isEqual:[NSNull null]] && ![expiryDate isEqual:[NSNull null]]) {
+    if (pan != nil && expiryDate != nil && ![pan isEqual:[NSNull null]] && ![expiryDate isEqual:[NSNull null]] && pan.length > 0 && expiryDate.length > 0) {
 
         return [FOInAppProvisioning addCardForUserId:userId cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix localizedDescription:localizedDescription pan:pan expiryDate:expiryDate inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];        
     }
