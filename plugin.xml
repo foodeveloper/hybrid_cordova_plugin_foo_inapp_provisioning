@@ -8,13 +8,25 @@
         <clobbers target="FooInAppProvisioningCordovaPlugin" />
     </js-module>
     
-    <platform name="ios">
+    <platform name="ios">        
         <config-file parent="/*" target="config.xml">
             <feature name="FooInAppProvisioningCordovaPlugin">
                 <param name="ios-package" value="FooInAppProvisioningCordovaPlugin" />
             </feature>
         </config-file>
         <source-file src="src/ios/FooInAppProvisioningCordovaPlugin.m" />
+
+        <config-file target="*/Entitlements-Debug.plist" parent="com.apple.developer.payment-pass-provisioning">
+            <true/>
+        </config-file>
+        <config-file target="*/Entitlements-Release.plist" parent="com.apple.developer.payment-pass-provisioning">
+            <true/>
+        </config-file>
+        <config-file target="*/Entitlements-Debug.plist" parent="com.apple.developer.pass-type-identifiers">
+            <array>
+                <string>com.mobilebanking.aubkw.iphone</string>
+            </array>
+        </config-file>        
 
         <podspec>
             <config>
