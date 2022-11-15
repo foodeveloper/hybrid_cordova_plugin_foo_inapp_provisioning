@@ -193,9 +193,9 @@
                 NSDictionary *failure = @{@"error" : error.localizedDescription};
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:failure];
             } else {
-                NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];            
+                NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
                 NSDictionary *success = @{@"result":jsonString};
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];            
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
             }
             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.inAppDelegateCommand.callbackId];
     }];

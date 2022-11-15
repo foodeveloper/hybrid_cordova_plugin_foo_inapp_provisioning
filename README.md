@@ -22,6 +22,12 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.setHostNameAndPath("YOUR_HOST", "YOUR_PATH", successCallback, failureCallback);
 ```
 
+successCallback:
+- {}
+
+failureCallback:
+- {}
+
 #### Check device supports Apple Wallet
 
 ```
@@ -35,6 +41,12 @@ function failureCallback(message){
 
 FooInAppProvisioningCordovaPlugin.deviceSupportsAppleWallet(successCallback, failureCallback);
 ```
+
+successCallback:
+- "result": 1/0
+
+failureCallback:
+- {}
 
 #### Get Local Passes
 
@@ -50,6 +62,27 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.getLocalPasses(successCallback, failureCallback);
 ```
 
+successCallback:
+```
+"result": [{
+  "PKPaymentPass": {
+      "Description": (String),
+      "AuthenticationToken": (String),
+      "DeviceAccountIdentifier": (String),
+      "DeviceAccountNumberSuffix": (String),
+      "DeviceName": (String),
+      "IsProxy": (1/0)
+  },
+  "SerialNumber": (String),
+  "WebServiceURL": (String),
+  "PassTypeIdentifier": (String),
+  "AuthenticationToken":  (String)
+}]
+```
+
+failureCallback:
+- {}
+
 #### Get Remote Passes
 
 ``` 
@@ -64,6 +97,27 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.getRemotePasses(successCallback, failureCallback);
 ```
 
+successCallback:
+```
+"result": [{
+  "PKPaymentPass": {
+      "Description": (String),
+      "AuthenticationToken": (String),
+      "DeviceAccountIdentifier": (String),
+      "DeviceAccountNumberSuffix": (String),
+      "DeviceName": (String),
+      "IsProxy": (1/0)
+  },
+  "SerialNumber": (String),
+  "WebServiceURL": (String),
+  "PassTypeIdentifier": (String),
+  "AuthenticationToken":  (String)
+}]
+```
+
+failureCallback:
+- {}
+
 #### Check Card Added To Local Wallet With Card Suffix
 
 ``` 
@@ -77,6 +131,12 @@ function failureCallback(message){
   
 FooInAppProvisioningCordovaPlugin.isCardAddedToLocalWalletWithCardSuffix("CARD_SUFFIX", successCallback, failureCallback);
 ```
+
+successCallback:
+- "result": 1/0
+
+failureCallback:
+- {}
 
 
 #### Check Card Added To Remote Wallet With Card Suffix
@@ -93,6 +153,12 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.isCardAddedToRemoteWalletWithCardSuffix("CARD_SUFFIX", successCallback, failureCallback);
 ```
 
+successCallback:
+- "result": 1/0
+
+failureCallback:
+- {}
+
 #### Check Card Added To Local Wallet With Primary Account Identifier
 
 ```
@@ -106,6 +172,12 @@ function failureCallback(message){
   
 FooInAppProvisioningCordovaPlugin.isCardAddedToLocalWalletWithPrimaryAccountIdentifier("ACCOUNT_IDENTIFIER", successCallback, failureCallback);
 ```
+
+successCallback:
+- "result": 1/0
+
+failureCallback:
+- {}
 
 #### Check Card Added To Remote Wallet With Primary Account Identifier
 
@@ -121,6 +193,12 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.isCardAddedToRemoteWalletWithPrimaryAccountIdentifier("ACCOUNT_IDENTIFIER", successCallback, failureCallback);
 ```
 
+successCallback:
+- "result": 1/0
+
+failureCallback:
+- {}
+
 #### Add Card
 
 ``` 
@@ -134,6 +212,25 @@ function failureCallback(message){
   
 FooInAppProvisioningCordovaPlugin.addCard("USER_ID", "CARD_ID", "CARD_HOLDER_NAME", "LOCALIZED_DESCRIPTION", "CARD_PAN_SUFFIX", "PAN", "EXPIRY_DATE", successCallback, failureCallback);
 ```
+
+successCallback:
+```
+"result": {
+  "pass": {
+    "authenticationToken": (String),
+    "description": (String),
+    "deviceAccountIdentifier": (String),
+    "deviceAccountNumberSuffix": (String),
+    "deviceName": (String),
+    "isProxy": (1/0)
+  },
+  "error": (Int / Enum),
+  "errorMessage": (String)
+}
+```
+
+failureCallback:
+- {"error" : (String)};
 
 Examples:
 
@@ -158,9 +255,9 @@ function failureCallback(message){
 FooInAppProvisioningCordovaPlugin.isWatchPaired(successCallback, failureCallback);
 ```
 
-Possible results for successCallback:
+successCallback:
 - "isPaired" : true/false
 - "status" : "active"/"inactive"/"deactived"
 
-Possible results for failureCallback:
+failureCallback:
 - "status" : "notSupported"
