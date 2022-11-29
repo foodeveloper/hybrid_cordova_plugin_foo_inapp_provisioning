@@ -35,7 +35,9 @@
             <pods>
                 <pod name="FooAppleWalletFramework" spec="~> 1.0.13" />
             </pods>
-        </podspec>        
+        </podspec>
+
+        <framework src="PassKit.framework" />
 
     </platform>
 

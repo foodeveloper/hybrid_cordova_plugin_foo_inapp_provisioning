@@ -34,12 +34,16 @@ fooInAppProvisioning.isCardAddedToRemoteWalletWithPrimaryAccountIdentifier = fun
     exec(success, error, "FooInAppProvisioningCordovaPlugin", "isCardAddedToRemoteWalletWithPrimaryAccountIdentifier", [primaryAccountIdentifier]);
 };
 
-fooInAppProvisioning.addCard = function(userId, cardId, cardHolderName, localizedDescription, cardPanSuffix, pan, expiryDate, success, error) {
-    exec(success, error, "FooInAppProvisioningCordovaPlugin", "addCardForUser", [userId, cardId, cardHolderName, localizedDescription, cardPanSuffix, pan, expiryDate]);
+fooInAppProvisioning.addCard = function(userId, cardId, cardHolderName, cardPanSuffix, localizedDescription, pan, expiryDate, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "addCardForUser", [userId, cardId, cardHolderName, cardPanSuffix, localizedDescription, pan, expiryDate]);
 };
 
 fooInAppProvisioning.isWatchPaired = function(success, error) {
     exec(success, error, "FooInAppProvisioningCordovaPlugin", "isWatchPaired", []);
+};
+
+fooInAppProvisioning.openWalletPassUrl = function(urlString, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "openWalletPassUrl", [urlString]);
 };
 
 module.exports = fooInAppProvisioning;

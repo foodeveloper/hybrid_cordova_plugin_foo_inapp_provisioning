@@ -76,7 +76,8 @@ successCallback:
   "SerialNumber": (String),
   "WebServiceURL": (String),
   "PassTypeIdentifier": (String),
-  "AuthenticationToken":  (String)
+  "AuthenticationToken":  (String),
+  "passURL": (String)
 }]
 ```
 
@@ -111,7 +112,8 @@ successCallback:
   "SerialNumber": (String),
   "WebServiceURL": (String),
   "PassTypeIdentifier": (String),
-  "AuthenticationToken":  (String)
+  "AuthenticationToken":  (String),
+  "passURL": (String)
 }]
 ```
 
@@ -210,7 +212,7 @@ function failureCallback(message){
   //Add Failure Handling here
 }
   
-FooInAppProvisioningCordovaPlugin.addCard("USER_ID", "CARD_ID", "CARD_HOLDER_NAME", "LOCALIZED_DESCRIPTION", "CARD_PAN_SUFFIX", "PAN", "EXPIRY_DATE", successCallback, failureCallback);
+FooInAppProvisioningCordovaPlugin.addCard("USER_ID", "CARD_ID", "CARD_HOLDER_NAME", "CARD_PAN_SUFFIX","LOCALIZED_DESCRIPTION", "PAN", "EXPIRY_DATE", successCallback, failureCallback);
 ```
 
 successCallback:
@@ -235,11 +237,11 @@ failureCallback:
 Examples:
 
 ```
-FooInAppProvisioningCordovaPlugin.addCard("1234", "123", "TEST USER", "en", "4178", "1234920006324178", "04/25", testSuccess, testFail)
-FooInAppProvisioningCordovaPlugin.addCard("1234", "123", "TEST USER", "en", "4178", null, null, testSuccess, testFail)
+FooInAppProvisioningCordovaPlugin.addCard("1234", "123", "TEST USER", "4178", "en", "1234920006324178", "04/25", testSuccess, testFail)
+FooInAppProvisioningCordovaPlugin.addCard("1234", "123", "TEST USER", "4178",  "en", null, null, testSuccess, testFail)
 ```
 
-### Watch supports
+### Watch support
 
 #### Check Watch Pairing
 
@@ -261,3 +263,25 @@ successCallback:
 
 failureCallback:
 - "status" : "notSupported"
+
+### PassKit support
+
+#### Open Wallet Passkit URL
+
+```
+function successCallback(result){
+  //Add Success Handling here
+}
+
+function failureCallback(message){
+  //Add Failure Handling here
+}
+
+FooInAppProvisioningCordovaPlugin.openWalletPassUrl(passUrl, successCallback, failureCallback);
+```
+
+successCallback:
+- "result" : {"error":0/null/undefined}
+
+failureCallback:
+- "result" : {"error":"ERROR_MESSAGE"}

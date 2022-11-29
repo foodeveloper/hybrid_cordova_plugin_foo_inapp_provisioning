@@ -3,6 +3,7 @@
 #import <Cordova/CDV.h>
 #import <FooAppleWallet/FOAppleWallet.h>
 #import <FooAppleWallet/FOInAppProvisioning.h>
+#import <PassKit/PassKit.h>
 #import <WatchConnectivity/WatchConnectivity.h>
 
 @interface FooInAppProvisioningCordovaPlugin : CDVPlugin <FOInAppProtocol, WCSessionDelegate> {
@@ -12,6 +13,7 @@
 @property (nonatomic, strong) CDVInvokedUrlCommand *inAppDelegateCommand;
 @property (nonatomic, strong) CDVInvokedUrlCommand *watchDelegateCommand;
 
+//InAppProvisioniong FooAppleWalletFramework SDK
 - (void)setHostNameAndPath:(CDVInvokedUrlCommand*)command;
 - (void)deviceSupportsAppleWallet:(CDVInvokedUrlCommand*)command;
 - (void)getLocalPasses:(CDVInvokedUrlCommand*)command;
@@ -22,11 +24,17 @@
 - (void)isCardAddedToRemoteWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command;
 - (void)addCardForUser:(CDVInvokedUrlCommand*)command;
 
+//WatchConnectivity
 - (void)isWatchPaired:(CDVInvokedUrlCommand*)command;
+
+//PassKit
+- (void)openWalletPassUrl:(CDVInvokedUrlCommand*)command;
 
 @end
 
 @implementation FooInAppProvisioningCordovaPlugin
+
+#pragma mark - FooAppleWalletFramework
 
 - (void)setHostNameAndPath:(CDVInvokedUrlCommand*)command
 {
@@ -130,9 +138,9 @@
 {
     NSString* userId = [command.arguments objectAtIndex:0];
     NSString* cardId = [command.arguments objectAtIndex:1];
-    NSString* cardHolderName = [command.arguments objectAtIndex:2];    
-    NSString* localizedDescription = [command.arguments objectAtIndex:3];
-    NSString* cardPanSuffix = [command.arguments objectAtIndex:4];
+    NSString* cardHolderName = [command.arguments objectAtIndex:2];
+    NSString* cardPanSuffix = [command.arguments objectAtIndex:3];
+    NSString* localizedDescription = [command.arguments objectAtIndex:4];
     NSString* pan = [command.arguments objectAtIndex:5];
     NSString* expiryDate = [command.arguments objectAtIndex:6];    
     self.inAppDelegateCommand = command;
@@ -146,6 +154,8 @@
         return [FOInAppProvisioning addCardForUserId:userId cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix localizedDescription:localizedDescription inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];
     }
 }
+
+#pragma mark - WatchConnectivity
 
 - (void)isWatchPaired:(CDVInvokedUrlCommand*)command {
     
@@ -165,9 +175,57 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.watchDelegateCommand.callbackId];
 }
 
-//Delegates
+#pragma mark - PassKit
 
-////FOInAppProtocol
+- (void)openWalletPassUrl:(CDVInvokedUrlCommand*)command {
+        
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    NSString* passURLString = [command.arguments objectAtIndex:0];
+    
+    if (passURLString == nil || [passURLString isEqual:[NSNull null]]){
+        NSDictionary *error = @{@"error":@"No URL provided"};
+        [result setObject:error forKey:@"result"];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:result];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+        
+    NSURL *url = [NSURL URLWithString:passURLString];
+    if (url == nil){
+        NSDictionary *error = @{@"error":[NSString stringWithFormat:@"Invalid URL: %@", passURLString]};
+        [result setObject:error forKey:@"result"];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:result];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    
+    if (![[UIApplication sharedApplication] canOpenURL:url]){
+        NSDictionary *error = @{@"error":[NSString stringWithFormat:@"Can not open URL: %@", passURLString]};
+        [result setObject:error forKey:@"result"];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:result];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+        
+    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+        if (success) {
+            NSDictionary *error = @{@"error":@(0)};
+            [result setObject:error forKey:@"result"];
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+        else {
+            NSDictionary *error = @{@"error":[NSString stringWithFormat:@"Failed to open URL: %@", passURLString]};
+            [result setObject:error forKey:@"result"];
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:result];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+    }];
+}
+
+#pragma mark - Delegates
+
+#pragma mark FOInAppProtocol
 - (void)didFinishAddingCard:(nullable PKPaymentPass *)pass error:(FOInAppAddCardError)error errorMessage:(nullable NSString *)errorMessage {    
 
     __block CDVPluginResult* pluginResult = nil;
@@ -179,7 +237,6 @@
           if(pass != nil) {
               [details setObject:[self getDictionaryFromPkPaymentPass:pass] forKey:@"PKPaymentPass"];
           }
-
           [details setObject:@(error) forKey:@"error"];
           
           if(errorMessage != nil) {
@@ -196,13 +253,14 @@
             } else {
                 NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
                 NSDictionary *success = @{@"result":jsonString};
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];            
             }
             [self.commandDelegate sendPluginResult:pluginResult callbackId:self.inAppDelegateCommand.callbackId];
     }];
 }
 
-////WCSessionDelegate
+#pragma mark WCSessionDelegate
+
 - (void)session:(nonnull WCSession *)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(nullable NSError *)error {            
     NSDictionary *result = @{@"status" : @"active"};
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
@@ -221,7 +279,7 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.watchDelegateCommand.callbackId];
 }
 
-//Helpers
+#pragma mark - Helpers
 - (NSDictionary *)getDictionaryFromPkPaymentPass:(PKPaymentPass *)pkPaymentPass  {
     
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
@@ -262,7 +320,7 @@
     }
     
     if(pkPass.webServiceURL != nil) {
-        [dictionary setObject:pkPass.webServiceURL forKey:@"WebServiceURL"];
+        [dictionary setObject:pkPass.webServiceURL.absoluteString forKey:@"WebServiceURL"];
     }
     
     if(pkPass.passTypeIdentifier != nil) {
@@ -271,6 +329,10 @@
     
     if(pkPass.authenticationToken != nil) {
         [dictionary setObject:pkPass.authenticationToken forKey:@"AuthenticationToken"];
+    }
+    
+    if(pkPass.passURL != nil) {
+        [dictionary setObject:pkPass.passURL.absoluteString forKey:@"passURL"];
     }
     
     return [dictionary copy];
