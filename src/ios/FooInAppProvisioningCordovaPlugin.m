@@ -234,28 +234,23 @@
         
         NSMutableDictionary* details = [NSMutableDictionary new];
           
-          if(pass != nil) {
-              [details setObject:[self getDictionaryFromPkPaymentPass:pass] forKey:@"PKPaymentPass"];
-          }
-          [details setObject:@(error) forKey:@"error"];
-          
-          if(errorMessage != nil) {
-              [details setObject:errorMessage forKey:@"errorMessage"];
-          }
-          
-          NSError *error;
-          NSData *jsonData = [NSJSONSerialization dataWithJSONObject:details
-                                                             options:NSJSONWritingPrettyPrinted
-                                                               error:&error];
-            if (!jsonData) {
-                NSDictionary *failure = @{@"error" : error.localizedDescription};
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:failure];
-            } else {
-                NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                NSDictionary *success = @{@"result":jsonString};
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];            
-            }
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:self.inAppDelegateCommand.callbackId];
+        if(pass != nil) {
+            [details setObject:[self getDictionaryFromPkPaymentPass:pass] forKey:@"PKPaymentPass"];
+        }
+        [details setObject:@(error) forKey:@"error"];
+        
+        if(errorMessage != nil) {
+            [details setObject:errorMessage forKey:@"errorMessage"];
+        }
+
+        NSDictionary *result = @{@"result":details};
+        if (error == 0){            
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];            
+        }   
+        else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:result];            
+        }                                                               
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.inAppDelegateCommand.callbackId];
     }];
 }
 
