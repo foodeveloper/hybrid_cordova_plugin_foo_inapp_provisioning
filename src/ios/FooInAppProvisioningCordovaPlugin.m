@@ -179,7 +179,8 @@
           if(pass != nil) {
               [details setObject:[self getDictionaryFromPkPaymentPass:pass] forKey:@"PKPaymentPass"];
           }
-          [details setValue:@(error) forKey:@"error"];
+
+          [details setObject:@(error) forKey:@"error"];
           
           if(errorMessage != nil) {
               [details setObject:errorMessage forKey:@"errorMessage"];
