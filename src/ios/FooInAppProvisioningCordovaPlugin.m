@@ -249,7 +249,7 @@
         }   
         else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:result];            
-        }                                                               
+        }                                                            
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.inAppDelegateCommand.callbackId];
     }];
 }
