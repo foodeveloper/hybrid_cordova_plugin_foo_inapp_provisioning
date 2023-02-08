@@ -64,21 +64,7 @@ FooInAppProvisioningCordovaPlugin.getLocalPasses(successCallback, failureCallbac
 
 successCallback:
 ```
-"result": [{
-  "PKPaymentPass": {
-      "Description": (String),
-      "AuthenticationToken": (String),
-      "DeviceAccountIdentifier": (String),
-      "DeviceAccountNumberSuffix": (String),
-      "DeviceName": (String),
-      "IsProxy": (1/0)
-  },
-  "SerialNumber": (String),
-  "WebServiceURL": (String),
-  "PassTypeIdentifier": (String),
-  "AuthenticationToken":  (String),
-  "passURL": (String)
-}]
+"result": [PKPass]
 ```
 
 failureCallback:
@@ -100,21 +86,51 @@ FooInAppProvisioningCordovaPlugin.getRemotePasses(successCallback, failureCallba
 
 successCallback:
 ```
-"result": [{
-  "PKPaymentPass": {
-      "Description": (String),
-      "AuthenticationToken": (String),
-      "DeviceAccountIdentifier": (String),
-      "DeviceAccountNumberSuffix": (String),
-      "DeviceName": (String),
-      "IsProxy": (1/0)
-  },
-  "SerialNumber": (String),
-  "WebServiceURL": (String),
-  "PassTypeIdentifier": (String),
-  "AuthenticationToken":  (String),
-  "passURL": (String)
-}]
+"result": [PKPaymentPass]
+```
+
+failureCallback:
+- {}
+
+#### Get Local Passes with Card Suffix
+
+```
+function successCallback(result){
+  //Add Success Handling here
+}
+
+function failureCallback(message){
+  //Add Failure Handling here
+}
+
+FooInAppProvisioningCordovaPlugin.getLocalPassesWithCardSuffix(cardSuffix, successCallback, failureCallback);
+```
+
+successCallback:
+```
+"result": PKPass
+```
+
+failureCallback:
+- {}
+
+#### Get Remote Passes with Card Suffix
+
+```
+function successCallback(result){
+  //Add Success Handling here
+}
+
+function failureCallback(message){
+  //Add Failure Handling here
+}
+
+FooInAppProvisioningCordovaPlugin.getRemotePassesWithCardSuffix(cardSuffix, successCallback, failureCallback);
+```
+
+successCallback:
+```
+"result": PKPaymentPass
 ```
 
 failureCallback:
@@ -217,22 +233,16 @@ FooInAppProvisioningCordovaPlugin.addCard("USER_ID", "CARD_ID", "CARD_HOLDER_NAM
 
 successCallback:
 ```
+"result": PKPaymentPass
+```
+
+failureCallback:
+```
 "result": {
-  "pass": {
-    "authenticationToken": (String),
-    "description": (String),
-    "deviceAccountIdentifier": (String),
-    "deviceAccountNumberSuffix": (String),
-    "deviceName": (String),
-    "isProxy": (1/0)
-  },
   "error": (Int / Enum),
   "errorMessage": (String)
 }
 ```
-
-failureCallback:
-- {"error" : (String)};
 
 Examples:
 
@@ -285,3 +295,46 @@ successCallback:
 
 failureCallback:
 - "result" : {"error":"ERROR_MESSAGE"}
+
+## Response Description
+
+### PKPass
+```
+{
+  "PassType":(Integer),
+  "SecureElementPass":(PKSecureElementPass),
+  "SerialNumber":(String),
+  "PassTypeIdentifier":(String),
+  "DeviceName":(String),
+  "LocalizedName":(String),
+  "LocalizedDescription":(String),
+  "RemotePass":(Boolean 1/0),
+  "PKPaymentPass":(PKPaymentPass),
+  "WebServiceURL":(String),
+  "AuthenticationToken":(String),
+  "OrganizationName":(String),
+  "passURL":(String)
+}
+```
+
+### PKSecureElementPass
+- Contains all parameters in PKPass with the addition of the below:
+```
+{
+  "PassActivationState":(Integer),
+  "DeviceAccountIdentifier":(String),
+  "DeviceAccountNumberSuffix":(String),
+  "DevicePassIdentifier":(String),
+  "PairedTerminalIdentifier":(String),
+  "PrimaryAccountIdentifier":(String),
+  "PrimaryAccountNumberSuffix":(String)
+}
+```
+
+### PKPaymentPass
+- Contains all parameters in PKSecureElementPass with the addition of the below:
+```
+{
+  "ActivationState": (Integer)
+}
+```

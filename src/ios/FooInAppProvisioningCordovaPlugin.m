@@ -18,6 +18,9 @@
 - (void)deviceSupportsAppleWallet:(CDVInvokedUrlCommand*)command;
 - (void)getLocalPasses:(CDVInvokedUrlCommand*)command;
 - (void)getRemotePasses:(CDVInvokedUrlCommand*)command;
+- (void)getLocalPassWithCardSuffix:(CDVInvokedUrlCommand*)command;
+- (void)getRemotePassWithCardSuffix:(CDVInvokedUrlCommand*)command;
+//- (nullable PKPass*)getPassWithCardSuffix:(NSString *)cardSuffix passes:(nullable NSArray <PKPass *>*)passes;
 - (void)isCardAddedToLocalWalletWithCardSuffix:(CDVInvokedUrlCommand*)command;
 - (void)isCardAddedToRemoteWalletWithCardSuffix:(CDVInvokedUrlCommand*)command;
 - (void)isCardAddedToLocalWalletWithPrimaryAccountIdentifier:(CDVInvokedUrlCommand*)command;
@@ -64,7 +67,7 @@
 {
     NSMutableArray* jsonList = [NSMutableArray arrayWithCapacity:[FOInAppProvisioning getLocalPasses].count];
     for (PKPass* pkPass in [FOInAppProvisioning getLocalPasses]) {
-        [jsonList addObject: [self getDictionaryFromPkPass:pkPass]];
+        [jsonList addObject: [self getDictionaryFromPkPass:pkPass parseNested:YES]];
     }
 
     __block CDVPluginResult* pluginResult = nil;
@@ -77,8 +80,32 @@
 {
     NSMutableArray* jsonList = [NSMutableArray arrayWithCapacity:[FOInAppProvisioning getRemotePasses].count];
     for (PKPaymentPass* pkPaymentPass in [FOInAppProvisioning getRemotePasses]) {
-      [jsonList addObject: [self getDictionaryFromPkPaymentPass:pkPaymentPass]];
+      [jsonList addObject: [self getDictionaryFromPkPaymentPass:pkPaymentPass parseNested:YES]];
     }
+
+    __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":jsonList};
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)getLocalPassWithCardSuffix:(CDVInvokedUrlCommand*)command {
+
+    NSString* cardSuffix = [command.arguments objectAtIndex:0];
+    PKPass* pkPass = [FOInAppProvisioning getLocalPassWithCardSuffix:cardSuffix];
+    NSDictionary* jsonList = [self getDictionaryFromPkPass:pkPass parseNested:YES];
+
+    __block CDVPluginResult* pluginResult = nil;
+    NSDictionary *success = @{@"result":jsonList};
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:success];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)getRemotePassWithCardSuffix:(CDVInvokedUrlCommand*)command {
+
+    NSString* cardSuffix = [command.arguments objectAtIndex:0];
+    PKPaymentPass* pkPaymentPass = [FOInAppProvisioning getRemotePassWithCardSuffix:cardSuffix];
+    NSDictionary* jsonList = [self getDictionaryFromPkPaymentPass:pkPaymentPass parseNested:YES];
 
     __block CDVPluginResult* pluginResult = nil;
     NSDictionary *success = @{@"result":jsonList};
@@ -147,11 +174,11 @@
     
     if (pan != nil && expiryDate != nil && ![pan isEqual:[NSNull null]] && ![expiryDate isEqual:[NSNull null]] && pan.length > 0 && expiryDate.length > 0) {
 
-        return [FOInAppProvisioning addCardForUserId:userId cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix localizedDescription:localizedDescription pan:pan expiryDate:expiryDate inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];        
+        return [FOInAppProvisioning addCardForUserId:userId deviceId:nil cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix localizedDescription:localizedDescription pan:pan expiryDate:expiryDate inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];
     }
     else {
 
-        return [FOInAppProvisioning addCardForUserId:userId cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix localizedDescription:localizedDescription inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];
+        return [FOInAppProvisioning addCardForUserId:userId deviceId:nil cardId:cardId cardHolderName:cardHolderName cardPanSuffix:cardPanSuffix sessionId:nil localizedDescription:localizedDescription inViewController:[UIApplication sharedApplication].keyWindow.rootViewController delegate:self];
     }
 }
 
@@ -235,7 +262,7 @@
         NSMutableDictionary* details = [NSMutableDictionary new];
           
         if(pass != nil) {
-            [details setObject:[self getDictionaryFromPkPaymentPass:pass] forKey:@"PKPaymentPass"];
+            [details setObject:[self getDictionaryFromPkPaymentPass:pass parseNested:YES] forKey:@"PKPaymentPass"];
         }
         [details setObject:@(error) forKey:@"error"];
         
@@ -249,7 +276,7 @@
         }   
         else {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:result];            
-        }                                                            
+        }
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.inAppDelegateCommand.callbackId];
     }];
 }
@@ -275,61 +302,131 @@
 }
 
 #pragma mark - Helpers
-- (NSDictionary *)getDictionaryFromPkPaymentPass:(PKPaymentPass *)pkPaymentPass  {
-    
+//PKPaymentPass
+- (NSDictionary *)getDictionaryFromPkPaymentPass:(PKPaymentPass *)pkPaymentPass parseNested:(BOOL)parseNested {
+    //https://developer.apple.com/documentation/passkit/pkpaymentpass
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
-    if(pkPaymentPass.description != nil) {
-        [dictionary setObject:pkPaymentPass.description forKey:@"Description"];
-    }
-    
-    if(pkPaymentPass.authenticationToken != nil) {
-        [dictionary setObject:pkPaymentPass.authenticationToken forKey:@"AuthenticationToken"];
-    }
-    
-    if(pkPaymentPass.deviceAccountIdentifier != nil) {
-        [dictionary setObject:pkPaymentPass.deviceAccountIdentifier forKey:@"DeviceAccountIdentifier"];
-    }
-    
-    if(pkPaymentPass.deviceAccountNumberSuffix != nil) {
-        [dictionary setObject:pkPaymentPass.deviceAccountNumberSuffix forKey:@"DeviceAccountNumberSuffix"];
-    }
-    
-    if(pkPaymentPass.deviceName != nil) {
-        [dictionary setObject:pkPaymentPass.deviceName forKey:@"DeviceName"];
-    }
-    
-    [dictionary setObject:@(pkPaymentPass.isProxy) forKey:@"IsProxy"];
-    
+
+    //Get Super Class PKSecureElementPass - BOOL No to avoid loop
+    NSDictionary *pkPassInfo = [self getDictionaryFromPkSecureElementPass:pkPaymentPass parseNested:parseNested];
+    [dictionary addEntriesFromDictionary:pkPassInfo];
+
+    //Determining activation state - Deprecated
+    [dictionary setObject:@(pkPaymentPass.activationState) forKey:@"ActivationState"];
+
     return [dictionary copy];
 }
 
-- (NSDictionary *)getDictionaryFromPkPass:(PKPass *)pkPass  {
-    
+//PKSecureElementPass
+- (NSDictionary *)getDictionaryFromPkSecureElementPass:(PKSecureElementPass *)pkSecureElementPass parseNested:(BOOL)parseNested {
+    //https://developer.apple.com/documentation/passkit/pksecureelementpass
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
-    if(pkPass.paymentPass != nil) {
-        [dictionary setObject:[self getDictionaryFromPkPaymentPass:pkPass.paymentPass] forKey:@"PKPaymentPass"];
+
+    //Get Super Class PKPass - BOOL No to avoid loop
+    NSDictionary *pkPassInfo = [self getDictionaryFromPkPass:pkSecureElementPass parseNested:parseNested];
+    [dictionary addEntriesFromDictionary:pkPassInfo];
+
+    //Getting the activation state
+    [dictionary setObject:@(pkSecureElementPass.passActivationState) forKey:@"PassActivationState"];
+
+    //Getting the hardware attributes
+    if(pkSecureElementPass.deviceAccountIdentifier != nil) {
+        [dictionary setObject:pkSecureElementPass.deviceAccountIdentifier forKey:@"DeviceAccountIdentifier"];
     }
-    
+
+    if(pkSecureElementPass.deviceAccountNumberSuffix != nil) {
+        [dictionary setObject:pkSecureElementPass.deviceAccountNumberSuffix forKey:@"DeviceAccountNumberSuffix"];
+    }
+
+    if(pkSecureElementPass.devicePassIdentifier != nil) {
+        [dictionary setObject:pkSecureElementPass.devicePassIdentifier forKey:@"DevicePassIdentifier"];
+    }
+
+    if(pkSecureElementPass.pairedTerminalIdentifier != nil) {
+        [dictionary setObject:pkSecureElementPass.pairedTerminalIdentifier forKey:@"PairedTerminalIdentifier"];
+    }
+
+    //Getting the account attributes
+    if(pkSecureElementPass.primaryAccountIdentifier != nil) {
+        [dictionary setObject:pkSecureElementPass.primaryAccountIdentifier forKey:@"PrimaryAccountIdentifier"];
+    }
+
+    if(pkSecureElementPass.primaryAccountNumberSuffix != nil) {
+        [dictionary setObject:pkSecureElementPass.primaryAccountNumberSuffix forKey:@"PrimaryAccountNumberSuffix"];
+    }
+
+    //Others
+    if(pkSecureElementPass.description != nil) {
+        [dictionary setObject:pkSecureElementPass.description forKey:@"Description"];
+    }
+
+    return [dictionary copy];
+}
+
+//PKPass
+- (NSDictionary *)getDictionaryFromPkPass:(PKPass *)pkPass parseNested:(BOOL)parseNested {
+    //https://developer.apple.com/documentation/passkit/pkpass?language=objc
+    NSMutableDictionary *dictionary = [NSMutableDictionary new];
+
+    //Identifying a pass
+    [dictionary setObject:@(pkPass.passType) forKey:@"PassType"];
+
+    if(pkPass.secureElementPass != nil && parseNested) {
+        [dictionary setObject:[self getDictionaryFromPkSecureElementPass:pkPass.secureElementPass parseNested:NO] forKey:@"SecureElementPass"];
+    }
+
     if(pkPass.serialNumber != nil) {
         [dictionary setObject:pkPass.serialNumber forKey:@"SerialNumber"];
     }
-    
-    if(pkPass.webServiceURL != nil) {
-        [dictionary setObject:pkPass.webServiceURL.absoluteString forKey:@"WebServiceURL"];
-    }
-    
+
     if(pkPass.passTypeIdentifier != nil) {
         [dictionary setObject:pkPass.passTypeIdentifier forKey:@"PassTypeIdentifier"];
     }
-    
+
+    if(pkPass.deviceName != nil) {
+        [dictionary setObject:pkPass.deviceName forKey:@"DeviceName"];
+    }
+
+    if(pkPass.localizedName != nil) {
+        [dictionary setObject:pkPass.localizedName forKey:@"LocalizedName"];
+    }
+
+    if(pkPass.localizedDescription != nil) {
+        [dictionary setObject:pkPass.localizedDescription forKey:@"LocalizedDescription"];
+    }
+
+    [dictionary setObject:@(pkPass.remotePass) forKey:@"RemotePass"];
+
+    //Deprecated
+    if(pkPass.paymentPass != nil  && parseNested) {
+        [dictionary setObject:[self getDictionaryFromPkPaymentPass:pkPass.paymentPass parseNested:NO] forKey:@"PKPaymentPass"];
+    }
+
+    //Getting the web service information
+    if(pkPass.webServiceURL != nil) {
+        [dictionary setObject:pkPass.webServiceURL.absoluteString forKey:@"WebServiceURL"];
+    }
+
     if(pkPass.authenticationToken != nil) {
         [dictionary setObject:pkPass.authenticationToken forKey:@"AuthenticationToken"];
     }
-    
+
+    //Getting the display attributes
+    //icon UIImage
+    //relevantDate NSDate
+    //localizedValueForFieldKey: String
+    if(pkPass.organizationName != nil) {
+        [dictionary setObject:pkPass.organizationName forKey:@"OrganizationName"];
+    }
+
+    //Getting the Wallet URL
     if(pkPass.passURL != nil) {
         [dictionary setObject:pkPass.passURL.absoluteString forKey:@"passURL"];
     }
-    
+
+    //Providing contextual information
+    //userInfo  NSDictionary
+
     return [dictionary copy];
 }
 

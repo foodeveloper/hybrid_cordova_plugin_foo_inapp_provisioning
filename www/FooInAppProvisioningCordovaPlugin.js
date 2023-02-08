@@ -18,6 +18,14 @@ fooInAppProvisioning.getRemotePasses = function(success, error) {
     exec(success, error, "FooInAppProvisioningCordovaPlugin", "getRemotePasses",[]);
 };
 
+fooInAppProvisioning.getLocalPassesWithCardSuffix = function(cardSuffix, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "getLocalPassWithCardSuffix", [cardSuffix]);
+};
+
+fooInAppProvisioning.getRemotePassesWithCardSuffix = function(cardSuffix, success, error) {
+    exec(success, error, "FooInAppProvisioningCordovaPlugin", "getRemotePassWithCardSuffix",[cardSuffix]);
+};
+
 fooInAppProvisioning.isCardAddedToLocalWalletWithCardSuffix = function(cardSuffix, success, error) {
     exec(success, error, "FooInAppProvisioningCordovaPlugin", "isCardAddedToLocalWalletWithCardSuffix", [cardSuffix]);
 };
